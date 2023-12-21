@@ -1,0 +1,39 @@
+version: '3.3'
+
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+    hostname: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+
+  express:
+    build:
+      context: serverpplk
+      dockerfile: _docker/dockerfile
+    restart: always
+    volumes:
+      - ./serverpplk:/usr/src/app
+      - /usr/src/app/node_modules
+    container_name: express
+    ports:
+      - "3000:3000"
+      - "5001:5001"
+    depends_on:
+      - mongo
+
+  react:
+    build:
+      context: ./clientpplk
+      dockerfile: _docker/Dockerfile
+    volumes:
+      - ./clientpplk:/usr/src/client
+      - /usr/src/client/node_modules
+    container_name: react
+    ports:
+      - "5173:5173"
